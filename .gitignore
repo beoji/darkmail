@@ -1,2 +1,6 @@
 # Don't track this folders
 .idea/
+src/__pycache__/
+
+# Don't track this files
+src/local.db
