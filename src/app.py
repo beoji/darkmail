@@ -8,10 +8,10 @@ import wx
 import wx.richtext as rt
 
 app_name = 'Dark Mail 1.0'
+about_msg = 'Autor: Bartłomiej Bohdzian\n\nLicencja MIT'
 
 
 # ----------------------------------------------------------------------------------------------------------------------
-
 
 class Application(wx.App):
 
@@ -27,7 +27,6 @@ class Application(wx.App):
 
 
 # ----------------------------------------------------------------------------------------------------------------------
-
 
 class MainWindow(wx.Frame, object):
     wnd_width = 600
@@ -166,8 +165,6 @@ class MenuBar(wx.MenuBar):
         config_dlg.ShowModal()
 
     def help_onclick(self, event):
-        about_msg = 'Autor: Bartłomiej Bohdzian\n\n' + \
-                    'Wszelkie prawa zastrzeżone'
         dlg = gmd.GenericMessageDialog(self, about_msg, app_name, wx.OK | wx.ICON_INFORMATION)
         dlg.ShowModal()
         dlg.Destroy()

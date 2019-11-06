@@ -61,6 +61,20 @@ class KonfigurujDialog(wx.Dialog):
     def __init__(self, parent, id_):
 
         super(KonfigurujDialog, self).__init__(parent, id_, 'Konfiguracja konta', wx.DefaultPosition)
+
+        self.create_gui()
+
+        self.server_input = wx.FindWindowByName('server_input')
+        self.port_input = wx.FindWindowByName('port_input')
+        self.ssl_cbox = wx.FindWindowByName('ssl_cbox')
+        self.user_input = wx.FindWindowByName('user_input')
+        self.passwd_input = wx.FindWindowByName('passwd_input')
+        self.header_input = wx.FindWindowByName('header_input')
+
+        self.settings = Polaczenie.select().first()
+        self.set_gui_values()
+
+    def create_gui(self):
         self.Center()
 
         main_sizer = wx.BoxSizer(wx.VERTICAL)
@@ -72,42 +86,39 @@ class KonfigurujDialog(wx.Dialog):
         sizer_6 = wx.BoxSizer(wx.HORIZONTAL)
         sizer_btn = wx.BoxSizer(wx.HORIZONTAL)
 
-        settings = Polaczenie.select().first()
+        pnl = wx.Panel(self)
 
-        self.panel = wx.Panel(self)
+        server_input = wx.TextCtrl(pnl, -1, size=(180, -1), name='server_input')
+        port_input = wx.TextCtrl(pnl, -1, size=(180, -1), name='port_input')
+        ssl_cbox = wx.CheckBox(pnl, -1, label="Połączenie SSL", name='ssl_cbox')
+        user_input = wx.TextCtrl(pnl, -1, size=(180, -1), name='user_input')
+        passwd_input = wx.TextCtrl(pnl, -1, size=(180, -1), style=wx.TE_PASSWORD, name='passwd_input')
+        header_input = wx.TextCtrl(pnl, -1, size=(180, -1), name='header_input')
 
-        self.server_input = wx.TextCtrl(self.panel, -1, settings.server, size=(180, -1))
-        self.port_input = wx.TextCtrl(self.panel, -1, str(settings.port), size=(180, -1))
-        self.ssl_cbox = wx.CheckBox(self.panel, -1, label="Połączenie SSL", name=wx.CheckBoxNameStr)
-        if settings.is_secure is True:
-            self.ssl_cbox.SetValue(True)
-        self.user_input = wx.TextCtrl(self.panel, -1, settings.user, size=(180, -1))
-        self.passwd_input = wx.TextCtrl(self.panel, -1, settings.passwd, size=(180, -1), style=wx.TE_PASSWORD)
-        self.header_input = wx.TextCtrl(self.panel, -1, settings.header, size=(180, -1))
+        server_lbl = wx.StaticText(pnl, -1, 'Server', size=(90, -1))
+        port_lbl = wx.StaticText(pnl, -1, 'Port', size=(90, -1))
+        user_lbl = wx.StaticText(pnl, -1, 'Użytkownik', size=(90, -1))
+        passwd_lbl = wx.StaticText(pnl, -1, 'Hasło', size=(90, -1))
+        header_lbl = wx.StaticText(pnl, -1, 'Nagłówek nadawcy', size=(90, -1))
 
-        server_text = wx.StaticText(self.panel, -1, 'Server', size=(90, -1))
-        port_text = wx.StaticText(self.panel, -1, 'Port', size=(90, -1))
-        user_text = wx.StaticText(self.panel, -1, 'Użytkownik', size=(90, -1))
-        passwd_text = wx.StaticText(self.panel, -1, 'Hasło', size=(90, -1))
-        header_text = wx.StaticText(self.panel, -1, 'Nagłówek nadawcy', size=(90, -1))
-
-        ok_btn = wx.Button(self.panel, -1, 'OK')
-        anuluj_btn = wx.Button(self.panel, wx.ID_CANCEL, 'Anuluj')
-        self.testuj_btn = wx.Button(self.panel, -1, 'Testuj')
+        ok_btn = wx.Button(pnl, -1, 'OK')
+        anuluj_btn = wx.Button(pnl, -1, 'Anuluj')
+        testuj_btn = wx.Button(pnl, -1, 'Testuj')
 
         ok_btn.Bind(wx.EVT_BUTTON, self.ok_btn_onclick)
-        self.port_input.Bind(wx.EVT_CHAR, input_only_nums)
-        self.testuj_btn.Bind(wx.EVT_BUTTON, self.testuj_btn_onclick)
+        anuluj_btn.Bind(wx.EVT_BUTTON, self.anuluj_btn_onclick)
+        port_input.Bind(wx.EVT_CHAR, input_only_nums)
+        testuj_btn.Bind(wx.EVT_BUTTON, self.testuj_btn_onclick)
 
-        sizer_1.AddMany([(server_text, 0, wx.ALIGN_CENTER), (self.server_input, 0)])
-        sizer_2.AddMany([(port_text, 0, wx.ALIGN_CENTER), (self.port_input, 0)])
-        sizer_3.Add(self.ssl_cbox, 0, wx.ALIGN_RIGHT)
-        sizer_4.AddMany([(user_text, 0, wx.ALIGN_CENTER), (self.user_input, 0)])
-        sizer_5.AddMany([(passwd_text, 0, wx.ALIGN_CENTER), (self.passwd_input, 0)])
-        sizer_6.AddMany([(header_text, 0, wx.ALIGN_CENTER), (self.header_input, 0)])
+        sizer_1.AddMany([(server_lbl, 0, wx.ALIGN_CENTER), (server_input, 0)])
+        sizer_2.AddMany([(port_lbl, 0, wx.ALIGN_CENTER), (port_input, 0)])
+        sizer_3.Add(ssl_cbox, 0, wx.ALIGN_RIGHT)
+        sizer_4.AddMany([(user_lbl, 0, wx.ALIGN_CENTER), (user_input, 0)])
+        sizer_5.AddMany([(passwd_lbl, 0, wx.ALIGN_CENTER), (passwd_input, 0)])
+        sizer_6.AddMany([(header_lbl, 0, wx.ALIGN_CENTER), (header_input, 0)])
         sizer_btn.AddMany([(ok_btn, 0, wx.RIGHT, 5),
                            (anuluj_btn, 0, wx.RIGHT, 5),
-                           (self.testuj_btn, 0)])
+                           (testuj_btn, 0)])
         only_bottom = wx.LEFT | wx.BOTTOM | wx.RIGHT
         main_sizer.AddMany([(sizer_1, 0, wx.EXPAND | wx.ALL, 5),
                             (sizer_2, 0, wx.EXPAND | only_bottom, 5),
@@ -116,37 +127,49 @@ class KonfigurujDialog(wx.Dialog):
                             (sizer_5, 0, wx.EXPAND | only_bottom, 5),
                             (sizer_6, 0, wx.EXPAND | only_bottom, 5),
                             (sizer_btn, 0, wx.EXPAND | wx.ALIGN_CENTER | only_bottom, 5)])
-        self.panel.SetSizer(main_sizer)
+        pnl.SetSizer(main_sizer)
         main_sizer.Fit(self)
 
+    def set_gui_values(self):
+        self.server_input.SetValue(self.settings.server)
+        self.port_input.SetValue(str(self.settings.port))
+        self.ssl_cbox.SetValue(self.settings.is_secure)
+        self.user_input.SetValue(self.settings.user)
+        self.passwd_input.SetValue(self.settings.passwd)
+        self.header_input.SetValue(self.settings.header)
+
     def ok_btn_onclick(self, event):
-        settings = Polaczenie.select().first()
-        settings.server = self.server_input.GetValue()
-        settings.port = int(self.port_input.GetValue())
-        settings.is_secure = self.ssl_cbox.GetValue()
-        settings.user = self.user_input.GetValue()
-        settings.passwd = self.passwd_input.GetValue()
-        settings.header = self.header_input.GetValue()
-        settings.save()
-        self.Close()
+        self.settings.server = self.server_input.GetValue()
+        self.settings.port = int(self.port_input.GetValue())
+        self.settings.is_secure = self.ssl_cbox.GetValue()
+        self.settings.user = self.user_input.GetValue()
+        self.settings.passwd = self.passwd_input.GetValue()
+        self.settings.header = self.header_input.GetValue()
+        self.settings.save()
+        self.Destroy()
+
+    def anuluj_btn_onclick(self, event):
+        self.Destroy()
 
     def testuj_btn_onclick(self, event):
         serv = self.server_input.GetValue()
         port = self.port_input.GetValue()
         usr = self.user_input.GetValue()
         passwd = self.passwd_input.GetValue()
+        secure = self.ssl_cbox.GetValue()
+        button = event.GetEventObject()
 
         try:
             with SMTP(serv, port, timeout=5) as server:
-                if self.ssl_cbox.GetValue() is True:
+                if secure is True:
                     context = ssl.create_default_context()
                     server.starttls(context=context)
                 server.login(usr, passwd)
-                self.testuj_btn.SetBackgroundColour('#6ab04c')
+                button.SetBackgroundColour('#6ab04c')
         except Exception as e:
             msg = wx.MessageDialog(self, str(e), caption='Błąd', style=wx.OK, pos=wx.DefaultPosition)
             msg.ShowModal()
-            self.testuj_btn.SetBackgroundColour('#eb4d4b')
+            button.SetBackgroundColour('#eb4d4b')
 
 
 # ----------------------------------------------------------------------------------------------------------------------
