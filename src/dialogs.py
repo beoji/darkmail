@@ -18,40 +18,45 @@ class WczytajDialog(wx.Dialog):
     def __init__(self, parent, id_, label):
         super(WczytajDialog, self).__init__(parent, id_, label, wx.DefaultPosition)
         self.Center()
-        self.panel = wx.Panel(self)
+        self.create_gui()
 
-        sizer0 = wx.BoxSizer(wx.VERTICAL)
+        self.email_input = wx.FindWindowByName('email_input')
+        self.imie_input = wx.FindWindowByName('imie_input')
 
-        sizer1 = wx.BoxSizer(wx.HORIZONTAL)
-        sizer2 = wx.BoxSizer(wx.HORIZONTAL)
-        sizer3 = wx.BoxSizer(wx.HORIZONTAL)
+    def create_gui(self):
+        pnl = wx.Panel(self)
 
-        email_info = wx.StaticText(self.panel, wx.NewId(), label="e-mail", size=(90, -1))
-        self.email_ctrl = wx.TextCtrl(self.panel, wx.NewId())
-        imie_ctrl_info = wx.StaticText(self.panel, wx.NewId(), label="imie", size=(90, -1))
-        self.imie_ctrl = wx.TextCtrl(self.panel, wx.NewId())
+        sizer_main = wx.BoxSizer(wx.VERTICAL)
+        sizer_email = wx.BoxSizer(wx.HORIZONTAL)
+        sizer_imie = wx.BoxSizer(wx.HORIZONTAL)
+        sizer_btn = wx.BoxSizer(wx.HORIZONTAL)
 
-        ok_btn = wx.Button(self.panel, wx.ID_OK)
-        cancel = wx.Button(self.panel, wx.ID_CANCEL)
+        email_lbl = wx.StaticText(pnl, 0, label="e-mail", size=(90, -1))
+        email_input = wx.TextCtrl(pnl, 0, name='email_input', size=(200, -1))
+        imie_lbl = wx.StaticText(pnl, 0, label="imie", size=(90, -1))
+        imie_input = wx.TextCtrl(pnl, 0, name='imie_input', size=(200, -1))
 
-        sizer1.Add(email_info, 1, wx.ALL | wx.EXPAND)
-        sizer1.Add(self.email_ctrl, 2, wx.ALL | wx.EXPAND)
+        ok_btn = wx.Button(pnl, wx.ID_OK)
+        anuluj_btn = wx.Button(pnl, wx.ID_CANCEL)
 
-        sizer2.Add(imie_ctrl_info, 1, wx.ALL | wx.EXPAND)
-        sizer2.Add(self.imie_ctrl, 2, wx.ALL | wx.EXPAND)
+        sizer_email.Add(email_lbl, 0, wx.ALL, 5)
+        sizer_email.Add(email_input, 0, wx.ALL, 5)
 
-        sizer3.Add(ok_btn, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALL, 5)
-        sizer3.Add(cancel, 0, wx.ALIGN_CENTER_HORIZONTAL | wx.ALL, 5)
+        sizer_imie.Add(imie_lbl, 0, wx.LEFT | wx.RIGHT, 5)
+        sizer_imie.Add(imie_input, 0, wx.LEFT | wx.RIGHT, 5)
 
-        sizer0.Add(sizer1, 0, wx.ALL, 5)
-        sizer0.Add(sizer2, 0, wx.ALL, 5)
-        sizer0.Add(sizer3, 0, wx.ALL, 5)
+        sizer_btn.Add(ok_btn, 1, wx.ALL | wx.EXPAND, 5)
+        sizer_btn.Add(anuluj_btn, 1, wx.ALL | wx.EXPAND, 5)
 
-        self.panel.SetSizer(sizer0)
-        sizer0.Fit(self)
+        sizer_main.Add(sizer_email, 0, wx.ALL, 5)
+        sizer_main.Add(sizer_imie, 0, wx.LEFT | wx.RIGHT, 5)
+        sizer_main.Add(sizer_btn, 0, wx.ALL | wx.EXPAND, 5)
 
-    def get(self):
-        return self.email_ctrl.GetValue(), self.imie_ctrl.GetValue()
+        pnl.SetSizer(sizer_main)
+        sizer_main.Fit(self)
+
+    def get_inputs(self):
+        return self.email_input.GetValue(), self.imie_input.GetValue()
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -61,7 +66,7 @@ class KonfigurujDialog(wx.Dialog):
     def __init__(self, parent, id_):
 
         super(KonfigurujDialog, self).__init__(parent, id_, 'Konfiguracja konta', wx.DefaultPosition)
-
+        self.Center()
         self.create_gui()
 
         self.server_input = wx.FindWindowByName('server_input')
@@ -75,8 +80,6 @@ class KonfigurujDialog(wx.Dialog):
         self.set_gui_values()
 
     def create_gui(self):
-        self.Center()
-
         main_sizer = wx.BoxSizer(wx.VERTICAL)
         sizer_1 = wx.BoxSizer(wx.HORIZONTAL)
         sizer_2 = wx.BoxSizer(wx.HORIZONTAL)
@@ -116,9 +119,10 @@ class KonfigurujDialog(wx.Dialog):
         sizer_4.AddMany([(user_lbl, 0, wx.ALIGN_CENTER), (user_input, 0)])
         sizer_5.AddMany([(passwd_lbl, 0, wx.ALIGN_CENTER), (passwd_input, 0)])
         sizer_6.AddMany([(header_lbl, 0, wx.ALIGN_CENTER), (header_input, 0)])
-        sizer_btn.AddMany([(ok_btn, 0, wx.RIGHT, 5),
-                           (anuluj_btn, 0, wx.RIGHT, 5),
-                           (testuj_btn, 0)])
+        exc_left = wx.RIGHT | wx.TOP | wx.BOTTOM
+        sizer_btn.AddMany([(ok_btn, 1, wx.ALL | wx.EXPAND, 5),
+                           (anuluj_btn, 1, exc_left | wx.EXPAND, 5),
+                           (testuj_btn, 1, exc_left | wx.EXPAND, 5)])
         only_bottom = wx.LEFT | wx.BOTTOM | wx.RIGHT
         main_sizer.AddMany([(sizer_1, 0, wx.EXPAND | wx.ALL, 5),
                             (sizer_2, 0, wx.EXPAND | only_bottom, 5),
@@ -126,7 +130,7 @@ class KonfigurujDialog(wx.Dialog):
                             (sizer_4, 0, wx.EXPAND | only_bottom, 5),
                             (sizer_5, 0, wx.EXPAND | only_bottom, 5),
                             (sizer_6, 0, wx.EXPAND | only_bottom, 5),
-                            (sizer_btn, 0, wx.EXPAND | wx.ALIGN_CENTER | only_bottom, 5)])
+                            (sizer_btn, 0, wx.EXPAND | wx.ALIGN_CENTER, 0)])
         pnl.SetSizer(main_sizer)
         main_sizer.Fit(self)
 
@@ -178,6 +182,7 @@ class WyslijDialog(wx.Dialog):
 
     def __init__(self, parent, id_):
         super(WyslijDialog, self).__init__(parent, id_, 'Wysyłanie', wx.DefaultPosition, (400, 200))
+        self.Center()
         self.settings = Polaczenie.select().first()
         try:
             self.server = self.create_server()
@@ -201,7 +206,6 @@ class WyslijDialog(wx.Dialog):
         return server
 
     def create_gui(self):
-        self.Center()
         panel = wx.Panel(self)
         adres_stc = wx.StaticText(panel, label='Adres', name='adres_stc')
         adres_lbl = wx.StaticText(panel, label='-', name='adres_lbl')

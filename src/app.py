@@ -110,13 +110,14 @@ class MenuBar(wx.MenuBar):
         panel = wx.FindWindowByName('panel')
         dlg = WczytajDialog(wx.GetApp().GetTopWindow(), 0, 'Dodaj klienta')
         if dlg.ShowModal() == wx.ID_OK:
-            var = dlg.get()
+            var = dlg.get_inputs()
             if var:
                 klienci_baza = [klient.email for klient in Klient.select()]
                 if var[0] not in klienci_baza:
                     new = Klient(email=var[0], imie=var[1])
                     new.save()
                     panel.refresh_lctrl()
+            dlg.Destroy()
 
     def edit_onclick(self, event):
         panel = wx.FindWindowByName('panel')
@@ -126,16 +127,17 @@ class MenuBar(wx.MenuBar):
         email = panel.client_lctrl.GetItem(i, 0).GetText()
         imie = panel.client_lctrl.GetItem(i, 1).GetText()
         edit_dlg = WczytajDialog(wx.GetApp().GetTopWindow(), 0, 'Edytuj klienta')
-        edit_dlg.email_ctrl.write(email)
-        edit_dlg.imie_ctrl.write(imie)
+        edit_dlg.email_input.write(email)
+        edit_dlg.imie_input.write(imie)
         if edit_dlg.ShowModal() != wx.ID_OK:
             return
-        var = edit_dlg.get()
+        var = edit_dlg.get_inputs()
         inst = Klient.select().where(Klient.email == email).get()
         inst.email = var[0]
         inst.imie = var[1]
         inst.save()
         panel.refresh_lctrl()
+        edit_dlg.Destroy()
 
     def delete_onclick(self, event):
         panel = wx.FindWindowByName('panel')
