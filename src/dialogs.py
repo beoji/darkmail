@@ -206,20 +206,34 @@ class WyslijDialog(wx.Dialog):
         return server
 
     def create_gui(self):
-        panel = wx.Panel(self)
-        adres_stc = wx.StaticText(panel, label='Adres', name='adres_stc')
-        adres_lbl = wx.StaticText(panel, label='-', name='adres_lbl')
-        sizer_1 = wx.BoxSizer(wx.HORIZONTAL)
-        sizer_1.AddMany([(adres_stc, 0, wx.ALL, 5),
-                         (adres_lbl, 0, wx.ALL, 5)])
-        progres_gg = wx.Gauge(panel, 0, 100, size=(250, 25), style=wx.GA_HORIZONTAL, name='progress_gg')
-        wyslij_btn = wx.Button(panel, -1, label="Wyslij", name='wyslij_btn')
-        wyslij_btn.Bind(wx.EVT_BUTTON, self.wyslij_btn_onclick)
+        pnl = wx.Panel(self)
         main_sizer = wx.BoxSizer(wx.VERTICAL)
-        main_sizer.AddMany([(sizer_1, 1, wx.ALL, 5),
-                            (progres_gg, 1, wx.ALL, 5),
-                            (wyslij_btn, 1, wx.ALIGN_RIGHT, 5)], )
-        panel.SetSizer(main_sizer)
+        top_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        btn_sizer = wx.BoxSizer(wx.HORIZONTAL)
+
+        adres_stc = wx.StaticText(pnl, label='Adres', name='adres_stc')
+        adres_lbl = wx.StaticText(pnl, label='-', name='adres_lbl')
+        counter_lbl = wx.StaticText(pnl, label='0/0', name='counter_lbl')
+
+        top_sizer.AddMany([(adres_stc, 0, wx.ALL, 5),
+                           (adres_lbl, 0, wx.ALL, 5),
+                           (counter_lbl, 0, wx.ALL, 5)])
+
+        progres_gg = wx.Gauge(pnl, 0, 100, size=(250, 25), style=wx.GA_HORIZONTAL, name='progress_gg')
+
+        wyslij_btn = wx.Button(pnl, -1, label="Wyslij", name='wyslij_btn')
+        wyslij_btn.Bind(wx.EVT_BUTTON, self.wyslij_btn_onclick)
+
+        anuluj_btn = wx.Button(pnl, -1, label="Anuluj", name='anuluj_btn')
+        anuluj_btn.Bind(wx.EVT_BUTTON, lambda e: self.Destroy())
+
+        btn_sizer.AddMany([(anuluj_btn, 0, wx.ALIGN_LEFT | wx.ALL, 5),
+                           (wyslij_btn, 0, wx.ALIGN_RIGHT | wx.ALL, 5)])
+
+        main_sizer.AddMany([(top_sizer, 1, wx.ALL, 5),
+                            (progres_gg, 1, wx.ALL | wx.EXPAND, 5),
+                            (btn_sizer, 1, wx.ALL | wx.EXPAND, 5)])
+        pnl.SetSizer(main_sizer)
         main_sizer.Fit(self)
 
     def wyslij_btn_onclick(self, event):

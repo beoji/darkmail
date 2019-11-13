@@ -37,14 +37,27 @@ class MainWindow(wx.Frame, object):
                                          wx.DEFAULT_FRAME_STYLE | wx.CLIP_CHILDREN, 'Okno')
         self.SetSizeHints(400, 300)
         self.Center()
-        menu_bar = MenuBar()
-        self.SetMenuBar(menu_bar)
-        bottom_bar = self.CreateStatusBar(2)
-        bottom_bar.SetStatusWidths([93, -1])
-        bottom_bar.SetStatusText('')
-        bottom_bar.SetStatusText('', 1)
 
-        MainPanel(self, -1)
+        menu_bar = MenuBar()  # Menu
+        self.SetMenuBar(menu_bar)
+
+        tool_bar = self.CreateToolBar()  # Tool Bar
+        tool_bar.AddTool(wx.ID_ANY, 'file', wx.Bitmap('../img/open.png'), shortHelp='Wczytaj z pliku')
+        tool_bar.AddTool(wx.ID_ANY, 'keyboard', wx.Bitmap('../img/keyboard.png'), shortHelp='Wczytaj z klawiatury')
+        tool_bar.AddTool(wx.ID_ANY, 'settings', wx.Bitmap('../img/settings.png'), shortHelp='Ustawienia')
+        tool_bar.AddTool(wx.ID_ANY, 'send', wx.Bitmap('../img/email.png'), shortHelp='Wyślij')
+        # tool_bar.Realize()
+
+        MainPanel(self, -1)  # Main Panel
+
+        status_bar = self.CreateStatusBar(2)  # Status Bar
+        status_bar.SetStatusWidths([200, -1])
+        status_bar.SetStatusText('a', 0)
+        status_bar.SetStatusText('b', 1)
+
+        self.SetStatusBar(status_bar)
+
+        print(self.GetStatusBar())
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -77,6 +90,7 @@ class MenuBar(wx.MenuBar):
         self.Append(pomoc, '&Pomoc')
 
         self.Bind(wx.EVT_MENU, self.read_from_file_onclick, id=101)
+        self.Bind(wx.EVT_MENU, lambda evt: wx.MessageBox('Not implemented yet.'), id=201)
         self.Bind(wx.EVT_MENU, self.read_from_keyboard_onclick, id=102)
         self.Bind(wx.EVT_MENU, self.edit_onclick, id=103)
         self.Bind(wx.EVT_MENU, self.delete_onclick, id=104)
@@ -179,27 +193,21 @@ class MainPanel(wx.Panel):
     def __init__(self, parent, id_):
         super(MainPanel, self).__init__(parent, id_, name='panel')
         self.i = 0
-        self.SetBackgroundColour(wx.Colour(61, 61, 61))
+        self.SetBackgroundColour('#E1E1E1')
         self.set_gui()
         self.subject_rtext = wx.FindWindowByName('subject_rtext')
         self.content_rtext = wx.FindWindowByName('content_rtext')
         self.client_lctrl = wx.FindWindowByName('client_lctrl')
-        self.client_lbl = wx.FindWindowByName('client_lbl')
         self.refresh_lctrl()
 
     def set_gui(self):
         top_bar = wx.Panel(self, -1)
         top_bar.SetBackgroundColour(wx.Colour(61, 161, 51))
         center_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        btn_sizer = wx.BoxSizer(wx.HORIZONTAL)
-
-        client_lbl = wx.StaticText(top_bar, wx.NewId(), label="0 klientow w bazie", name='client_lbl')
-        client_lbl.SetForegroundColour('#ffffff')
 
         main_box = wx.BoxSizer(wx.VERTICAL)
         main_box.Add(top_bar, 0, wx.EXPAND, 0)
         main_box.Add(center_sizer, 1, wx.EXPAND, 0)
-        main_box.Add(btn_sizer, 0, wx.EXPAND, 0)
 
         client_lctrl = wx.ListCtrl(self, wx.NewId(), style=wx.LC_REPORT, name='client_lctrl')
         client_lctrl.InsertColumn(0, 'e-mail')
@@ -210,31 +218,16 @@ class MainPanel(wx.Panel):
         left = wx.BoxSizer(wx.VERTICAL)
         left.Add(client_lctrl, 1, wx.EXPAND | wx.GROW | wx.RIGHT, 1)
 
-        tresc_style = wx.VSCROLL | wx.HSCROLL | wx.NO_BORDER
-        subject_rtext = wx.TextCtrl(self, wx.NewId(), size=(-1, 25), name='temat', value='Temat')
+        tresc_style = wx.VSCROLL | wx.HSCROLL
+        subject_rtext = wx.TextCtrl(self, wx.NewId(), size=(-1, 25), style=wx.NO_BORDER, name='temat', value='Temat')
+        subject_rtext.SetBackgroundColour('#FFFFFF')
         content_rtext = rt.RichTextCtrl(self, wx.NewId(), style=tresc_style, name='tresc', value='Treść')
         right = wx.BoxSizer(wx.VERTICAL)
-        right.Add(subject_rtext, 0, wx.EXPAND, 2)
-        right.Add(content_rtext, 1, wx.EXPAND, 2)
+        right.Add(subject_rtext, 0, wx.EXPAND | wx.BOTTOM, 1)
+        right.Add(content_rtext, 1, wx.EXPAND)
 
-        center_sizer.Add(left, 0, wx.EXPAND, 1)
-        center_sizer.Add(right, 1, wx.EXPAND, 1)
-
-        read_btn = wx.Button(self, -1, 'Wczytaj')
-        spacer = wx.Panel(self, -1)
-        attachment_btn = wx.Button(self, -1, 'Dodaj załącznik')
-        preview_btn = wx.Button(self, -1, 'Podgląd')
-        send_btn = wx.Button(self, -1, 'Wyślij')
-
-        menu = wx.GetApp().GetTopWindow().GetMenuBar()
-        read_btn.Bind(wx.EVT_BUTTON, menu.read_from_file_onclick)
-        send_btn.Bind(wx.EVT_BUTTON, menu.send_onclick)
-
-        btn_sizer.AddMany([(read_btn, 0, wx.EXPAND | wx.ALL, 1),
-                           (spacer, 1, wx.EXPAND | wx.ALL, 1),
-                           (attachment_btn, 0, wx.EXPAND | wx.ALL, 1),
-                           (preview_btn, 0, wx.EXPAND | wx.TOP | wx.BOTTOM, 1),
-                           (send_btn, 0, wx.EXPAND | wx.ALL, 1)])
+        center_sizer.Add(left, 1, wx.EXPAND, 1)
+        center_sizer.Add(right, 2, wx.EXPAND, 1)
 
         self.SetSizer(main_box)
 
@@ -242,7 +235,9 @@ class MainPanel(wx.Panel):
         self.client_lctrl.DeleteAllItems()
         clients = Klient.select()
         client_cnt = clients.count()
-        self.client_lbl.SetLabel('{} klientów w bazie'.format(client_cnt))
+        text = '{} klientów w bazie'.format(client_cnt)
+        # wx.GetTopLevelParent(self).SetStatusText(text)  Dont't find statusbar
+        # wx.GetTopLevelParent(self).GetStatusBar()  Don't find statusbar
         for client in clients:
             self.add_line_lctrl(client.email, client.imie)
         self.i = 0
