@@ -4,5 +4,6 @@
 src/__pycache__
 
 # Don't track this files
+local.db
 src/local.db
 vscode.code-workspace
