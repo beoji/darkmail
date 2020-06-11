@@ -114,7 +114,7 @@ class ConfigDialog(wx.Dialog):
 
         sizer_1.AddMany([(server_lbl, 0, wx.ALIGN_CENTER), (server_input, 0)])
         sizer_2.AddMany([(port_lbl, 0, wx.ALIGN_CENTER), (port_input, 0)])
-        sizer_3.Add(ssl_cbox, 0, wx.ALIGN_RIGHT)
+        sizer_3.Add(ssl_cbox, 0)
         sizer_4.AddMany([(user_lbl, 0, wx.ALIGN_CENTER), (user_input, 0)])
         sizer_5.AddMany([(passwd_lbl, 0, wx.ALIGN_CENTER), (passwd_input, 0)])
         sizer_6.AddMany([(header_lbl, 0, wx.ALIGN_CENTER), (header_input, 0)])
@@ -129,7 +129,7 @@ class ConfigDialog(wx.Dialog):
                             (sizer_4, 0, wx.EXPAND | only_bottom, 5),
                             (sizer_5, 0, wx.EXPAND | only_bottom, 5),
                             (sizer_6, 0, wx.EXPAND | only_bottom, 5),
-                            (sizer_btn, 0, wx.EXPAND | wx.ALIGN_CENTER, 0)])
+                            (sizer_btn, 0, wx.EXPAND, 0)])
         pnl.SetSizer(main_sizer)
         main_sizer.Fit(self)
 
