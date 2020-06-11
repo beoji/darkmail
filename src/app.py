@@ -20,10 +20,16 @@ class Application(wx.App):
         self.SetTopWindow(wnd)
         wnd.Show()
 
+<<<<<<< HEAD
         connection_settings = db.Polaczenie.select().first()
 
         if connection_settings is None:
             db.Polaczenie.create(server='', port=587, user='', is_secure=False, passwd='', header='')
+=======
+        connection_settings = Polaczenie.select().first()
+        if connection_settings is None:
+            Polaczenie.create(server='', port=587, user='', is_secure=False, passwd='', header='')
+>>>>>>> 10674f6dc4f9e8d950c57c06eaa1bb78a08e22b0
         return True
 
 
@@ -101,19 +107,34 @@ class MenuBar(wx.MenuBar):
 
     def read_from_file_onclick(self, event):
         panel = wx.FindWindowByName('panel')
+<<<<<<< HEAD
         d = wx.FileDialog(self, "Wybierz plik", os.getcwd(), "", "*.csv;*.txt")
         if d.ShowModal() != wx.ID_OK:
             return
         path = d.GetPath()
         clients = utils.get_clients_from_csv(path)
         klienci_baza = [klient.email for klient in db.Klient.select()]
+=======
+        dlg = wx.FileDialog(self, "Wybierz plik", os.getcwd(), "", "*.csv;*.txt")
+        if dlg.ShowModal() != wx.ID_OK:
+            return
+        path = dlg.GetPath()
+        clients = pobierz_dane_csv(path)
+        klienci_baza = [klient.email for klient in Klient.select()]
+>>>>>>> 10674f6dc4f9e8d950c57c06eaa1bb78a08e22b0
         new_cnt = 0
         for client in clients:
             if client[0] not in klienci_baza:
                 if len(client) == 1:
+<<<<<<< HEAD
                     new = db.Klient(email=client[0], imie='-')
                 else:
                     new = db.Klient(email=client[0], imie=client[1])
+=======
+                    new = Klient(email=client[0], imie='-')
+                else:
+                    new = Klient(email=client[0], imie=client[1])
+>>>>>>> 10674f6dc4f9e8d950c57c06eaa1bb78a08e22b0
                 new.save()
                 new_cnt += 1
         panel.refresh_lctrl()
@@ -123,6 +144,7 @@ class MenuBar(wx.MenuBar):
 
     def read_from_keyboard_onclick(self, event):
         panel = wx.FindWindowByName('panel')
+<<<<<<< HEAD
         d = dlg.ReadDialog(wx.GetApp().GetTopWindow(), 0, 'Dodaj klienta')
         if d.ShowModal() == 0:
             d.Destroy()
@@ -133,6 +155,18 @@ class MenuBar(wx.MenuBar):
                 new = db.Klient(email=var[0], imie=var[1])
                 new.save()
                 panel.refresh_lctrl()
+=======
+        dlg = WczytajDialog(wx.GetApp().GetTopWindow(), 0, 'Dodaj klienta')
+        if dlg.ShowModal() == wx.ID_OK:
+            var = dlg.get_inputs()
+            if var:
+                klienci_baza = [klient.email for klient in Klient.select()]
+                if var[0] not in klienci_baza:
+                    new = Klient(email=var[0], imie=var[1])
+                    new.save()
+                    panel.refresh_lctrl()
+            dlg.Destroy()
+>>>>>>> 10674f6dc4f9e8d950c57c06eaa1bb78a08e22b0
 
     def edit_onclick(self, event):
         panel = wx.FindWindowByName('panel')
@@ -141,6 +175,7 @@ class MenuBar(wx.MenuBar):
         i = panel.client_lctrl.GetFirstSelected()
         email = panel.client_lctrl.GetItem(i, 0).GetText()
         imie = panel.client_lctrl.GetItem(i, 1).GetText()
+<<<<<<< HEAD
         d = dlg.ReadDialog(wx.GetApp().GetTopWindow(), 0, 'Edytuj klienta')
         d.email_input.SetValue(email)
         d.imie_input.SetValue(imie)
@@ -153,6 +188,20 @@ class MenuBar(wx.MenuBar):
             panel.refresh_lctrl()
         else:
             d.Destroy()
+=======
+        edit_dlg = WczytajDialog(wx.GetApp().GetTopWindow(), 0, 'Edytuj klienta')
+        edit_dlg.email_input.write(email)
+        edit_dlg.imie_input.write(imie)
+        if edit_dlg.ShowModal() != wx.ID_OK:
+            return
+        var = edit_dlg.get_inputs()
+        inst = Klient.select().where(Klient.email == email).get()
+        inst.email = var[0]
+        inst.imie = var[1]
+        inst.save()
+        panel.refresh_lctrl()
+        edit_dlg.Destroy()
+>>>>>>> 10674f6dc4f9e8d950c57c06eaa1bb78a08e22b0
 
     def delete_onclick(self, event):
         panel = wx.FindWindowByName('panel')
@@ -163,7 +212,11 @@ class MenuBar(wx.MenuBar):
         msg = 'Czy na pewno chcesz usunąć wybranego klienta?'
         msdlg = wx.MessageDialog(self, msg, caption='Potwierdź', style=wx.OK | wx.CANCEL, pos=wx.DefaultPosition)
         if msdlg.ShowModal() == wx.ID_OK:
+<<<<<<< HEAD
             db.Klient.select().where(db.Klient.email == email).get().delete_instance()
+=======
+            Klient.select().where(Klient.email == email).get().delete_instance()
+>>>>>>> 10674f6dc4f9e8d950c57c06eaa1bb78a08e22b0
             panel.refresh_lctrl()
 
     def send_onclick(self, event):
@@ -174,6 +227,7 @@ class MenuBar(wx.MenuBar):
             err = wx.MessageDialog(self, str(e), caption='Błąd', style=wx.OK, pos=wx.DefaultPosition)
             err.ShowModal()
         else:
+<<<<<<< HEAD
             d.ShowModal()
 
     def config_onclick(self, event):
@@ -181,6 +235,14 @@ class MenuBar(wx.MenuBar):
         d = dlg.ConfigDialog(wnd, 0)
         if d.ShowModal() == 0:
             d.Destroy()
+=======
+            wyslij_dlg.ShowModal()
+
+    def config_onclick(self, event):
+        wnd = wx.GetApp().GetTopWindow()
+        config_dlg = KonfigurujDialog(wnd, 0)
+        config_dlg.ShowModal()
+>>>>>>> 10674f6dc4f9e8d950c57c06eaa1bb78a08e22b0
 
     def help_onclick(self, event):
         dlg = gmd.GenericMessageDialog(self, about_msg, app_name, wx.OK | wx.ICON_INFORMATION)
@@ -236,6 +298,9 @@ class MainPanel(wx.Panel):
     def refresh_lctrl(self):
         self.client_lctrl.DeleteAllItems()
         clients = db.Klient.select()
+        client_cnt = clients.count()
+        text = '{} klientów w bazie'.format(client_cnt)
+        # wx.GetTopLevelParent(self).SetStatusText(text)  Dont't find statusbar
         client_cnt = clients.count()
         text = '{} klientów w bazie'.format(client_cnt)
         # wx.GetTopLevelParent(self).SetStatusText(text)  Dont't find statusbar
