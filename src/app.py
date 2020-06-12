@@ -7,8 +7,8 @@ import wx.lib.agw.genericmessagedialog as gmd
 import wx
 import wx.richtext as rt
 
-app_name = 'Dark Mail 1.0'
-about_msg = 'Autor: Bartłomiej Bohdzian\n\nLicencja MIT'
+APP_NAME = 'Dark Mail 1.0'
+ABOUT_MSG = 'Autor: Bartłomiej Bohdzian\n\nLicencja MIT'
 
 
 # ----------------------------------------------------------------------------------------------------------------------
@@ -34,7 +34,7 @@ class MainWindow(wx.Frame, object):
     wnd_height = 400
 
     def __init__(self, parent, id_):
-        super(MainWindow, self).__init__(parent, id_, app_name, wx.DefaultPosition, (self.wnd_width, self.wnd_height),
+        super(MainWindow, self).__init__(parent, id_, APP_NAME, wx.DefaultPosition, (self.wnd_width, self.wnd_height),
                                          wx.DEFAULT_FRAME_STYLE | wx.CLIP_CHILDREN, 'Okno')
         self.SetSizeHints(400, 300)
         self.Center()
@@ -183,7 +183,7 @@ class MenuBar(wx.MenuBar):
             d.Destroy()
 
     def help_onclick(self, event):
-        dlg = gmd.GenericMessageDialog(self, about_msg, app_name, wx.OK | wx.ICON_INFORMATION)
+        dlg = gmd.GenericMessageDialog(self, ABOUT_MSG, APP_NAME, wx.OK | wx.ICON_INFORMATION)
         dlg.ShowModal()
         dlg.Destroy()
 
